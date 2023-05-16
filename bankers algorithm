@@ -1,0 +1,93 @@
+ #include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    int p, r;
+    int alloc[20][20], need[20][20], maxi[20][20];
+    int rec[20], aval[20];
+
+    cout << "Enter the number of process\n";
+    cin >> p;
+    cout << "Enter the number of resourse\n";
+    cin >> r;
+
+    cout << "enter the allocation matrix\n";
+    for (int i = 1; i <= p; i++)
+        for (int j = 1; j <= r; j++)
+            cin >> alloc[i][j];
+
+    cout << "enter the max matrix\n";
+    for (int i = 1; i <= p; i++)
+        for (int j = 1; j <= r; j++)
+            cin >> maxi[i][j];
+
+    cout << "Enter the number of resources\n";
+    for (int i = 1; i <= r; i++)
+        cin >> rec[i];
+
+    // need matrix=maxi-alloc
+    for (int i = 1; i <= p; i++)
+        for (int j = 1; j <= r; j++)
+            need[i][j] = maxi[i][j] - alloc[i][j];
+
+    // resourse avalible
+    cout << "Avalible\n";
+    for (int i = 1; i <= r; i++)
+    {
+        int sum = 0;
+        for (int j = 1; j <= p; j++)
+            sum += alloc[j][i];
+        aval[i] = rec[i] - sum;
+        cout << aval[i] << " ";
+    }
+    cout << "\n";
+
+    cout << "\nAllocMatrix\tmax Matrix\t needmatrix\n";
+    for (int i = 1; i <= p; i++)
+    {
+        for (int j = 1; j <= r; j++)
+            cout << alloc[i][j] << " ";
+        cout << "\t";
+        for (int j = 1; j <= r; j++)
+            cout << maxi[i][j] << " ";
+        cout << "\t";
+        for (int j = 1; j <= r; j++)
+            cout << need[i][j] << " ";
+        cout << "\n";
+    }
+    int loop = 1, c = 0, k = 0;
+    vector<int> vis(20, 0), safe(20);
+    while (loop < p && c != p)
+    {
+        loop++;
+        for (int i = 1; i <= p; i++)
+        {
+            int j;
+            if (vis[i] == 0)
+            {
+                for (j = 1; j <= r; j++)
+                {
+                    if (need[i][j] > aval[j])
+                        break;
+                }
+                if (j == r + 1)
+                {
+                    for (j = 1; j <= r; j++)
+                        aval[j] += alloc[i][j];
+                    vis[i] = 1;
+                    c++;
+                    safe[k++] = i;
+                }
+            }
+        }
+    }
+    if (c == p)
+    {
+        cout << "safe state\n";
+        for (int i = 0; i < p; i++)
+            cout << safe[i] << "-->";
+    }
+    else
+        cout << "Not safe\n";
+}
