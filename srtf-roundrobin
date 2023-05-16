@@ -1,0 +1,132 @@
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct t
+{
+    float aat, bt, tat;
+    int p;
+};
+vector<t> a;
+
+// comparator to sort by arrival time
+bool compare(t &x, t &y)
+{
+    return x.aat < y.aat;
+}
+// srtf
+
+void srtf(int sum)
+{
+    float ts = 0, diff;
+    int j = 0, k = 0;
+    int n = a.size();
+    while (ts < sum)
+    {
+        if (j < n - 1)
+        {
+            j++;
+            diff = a[j].aat - a[j - 1].aat;
+            a[k].bt -= diff;
+            ts += diff;
+            if (a[k].bt == 0)
+                a[k].tat = ts - a[k].aat;
+        }
+        else
+        {
+            ts += a[k].bt;
+            a[k].bt = 0;
+            a[k].tat = ts - a[k].aat;
+        }
+        int mini = INT_MAX;
+        for (int i = 0; i <= j; i++)
+        {
+            if (a[i].bt < mini && a[i].bt != 0)
+            {
+                mini = a[i].bt;
+                k = i;
+            }
+        }
+    }
+}
+
+void rr(int sum, int q)
+{
+    float ts = 0;
+    int cnt = 0, n = a.size();
+
+    while (cnt < n && ts < sum)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (a[i].bt != 0)
+            {
+                int rem = min(q, (int)a[i].bt);
+                a[i].bt -= rem;
+                ts += rem;
+
+                if (a[i].bt == 0)
+                {
+                    a[i].tat = ts - a[i].bt;
+                    cnt++;
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    int k = 1;
+    while (k)
+    {
+        cout << "Enter the number of process\n";
+        int n, sum = 0;
+        cin >> n;
+        a.resize(n);
+        for (int i = 0; i < n; i++)
+        {
+            cout << "Enter the arrival time of process:" << i + 1 << ":";
+            cin >> a[i].aat;
+            cout << "Enter the brust time of process:" << i + 1 << ":";
+            cin >> a[i].bt;
+            a[i].p = i + 1;
+            sum += a[i].bt;
+        }
+        sort(a.begin(), a.end(), compare);
+        cout << "process\tarrival time\tbrust time\n";
+        for (int i = 0; i < n; i++)
+        {
+            cout << a[i].p << "\t" << a[i].aat << "\t" << a[i].bt << "\n";
+        }
+        cout << "1.SRTF\n2.Round Robin\n";
+        int ch;
+        cin >> ch;
+        switch (ch)
+        {
+        case 1:
+            srtf(sum);
+            cout << "\n \n SHORTEST REMAINING TIME FIRST \n \n";
+            break;
+        case 2:
+            cout << "Enter time quantum (q): ";
+            int q;
+            cin >> q;
+            rr(sum, q);
+            cout << "\n \n ROUND ROBIN \n \n";
+            break;
+        }
+        cout << "\n\nP.no\tTAT\n";
+        float avg = 0;
+        for (int i = 0; i < n; i++)
+        {
+            cout << a[i].p << "\t" << a[i].tat << "\n";
+            avg += a[i].tat;
+        }
+        cout << "\n average T.A.T is " << avg / n << endl;
+
+        cout << "press 1 if you want to continue else press 0";
+        cin >> k;
+    }
+    return 0;
+}
